@@ -4,6 +4,9 @@
 #include <cstdlib>
 #include <cstdio>
 #include <time.h>
+#include <cstring>
+
+#define RULESIZE 8
 
 using namespace std;
 
@@ -11,6 +14,11 @@ using namespace std;
 enum Cell {
     ON,
     OFF
+};
+
+enum Mode {
+    RANDOM,
+    TRIANGLE
 };
 
 void cursesinit(WINDOW* mainwin){
@@ -28,13 +36,18 @@ void cleanup(WINDOW* mainwin){
     endwin();
 }
 
-void fill_array(Cell* arr, int size){
-    srand(time(NULL));
-    for (int i = 0; i < size; ++i){
-        arr[i] = Cell(rand()%2);
-        // arr[i] = OFF;
-    }
-    // arr[size/2] = ON;
+void fill_array(Cell* arr, int size, Mode mode){
+    if (mode == RANDOM){
+        srand(time(NULL));
+        for (int i = 0; i < size; ++i){
+            arr[i] = Cell(rand()%2);
+        }
+    } else if (mode == TRIANGLE){
+        for (int i = 0; i < size; ++i){
+            arr[i] = OFF;
+        }
+        arr[size/2] = ON;
+    } 
 }
 
 void print_array(Cell* arr, int size){
@@ -75,8 +88,8 @@ void gen_array(Cell* arr, int size, Cell* newarr, Cell* rules){
     }
 }
 
-void print_first(Cell* a, int WIDTH){
-    fill_array(a, WIDTH);
+void print_first(Cell* a, int WIDTH, Mode mode){
+    fill_array(a, WIDTH, mode);
     print_array(a, WIDTH);
 }
 
@@ -96,6 +109,58 @@ void print_rest(Cell* a, Cell* b, int WIDTH, int HEIGHT, Cell* rules){
     }
 }
 
+void default_pattern(Cell* rules){
+    cout << "Defaulting to pattern: [10010110]" << endl;
+    rules[0] = ON;
+    rules[1] = OFF;
+    rules[2] = OFF;
+    rules[3] = ON;
+    rules[4] = OFF;
+    rules[5] = ON;
+    rules[6] = ON;
+    rules[7] = OFF;
+}
+
+
+void parse_args(int argc, char** argv, Cell* rules, Mode* mode){
+    if (argc < 3){
+        cout << "No flag specified defaulting to -r" << endl;
+        *mode = RANDOM;
+    } else {
+        if (strcmp(argv[2], "-r") == 0){
+            cout << "MODE: RANDOM" << endl;
+            *mode = RANDOM;
+        } else if (strcmp(argv[2], "-t") == 0){
+            cout << "MODE: TRIANGLE" << endl;
+            *mode = TRIANGLE;
+        } else {
+            cout << "Invalid mode flag defaulting to -r" << endl;
+            *mode = RANDOM;
+        }
+    }
+    if (argc < 2){
+        cout << "Pattern not provided" << endl;
+        default_pattern(rules);
+    } else {
+        if (strlen(argv[1]) != RULESIZE){
+            cout << "Invalid Pattern size" << endl;
+            default_pattern(rules);
+            return;
+        }   
+        cout << "Using specified pattern [" << argv[1] << "]" << endl;
+        for (int i = 0; i < strlen(argv[1]); ++i){
+            if (argv[1][i] == '1'){
+                rules[i] = ON;
+            } else if (argv[1][i] == '0'){
+                rules[i] = OFF;
+            } else {
+                cout << "Invalid Pattern" << endl;
+                default_pattern(rules);
+            }
+        }
+    }
+}
+
 
 int main(int argc, char** argv){
 
@@ -110,9 +175,12 @@ int main(int argc, char** argv){
 
     Cell* a = new Cell [WIDTH];
     Cell* b = new Cell [WIDTH];
-    Cell rules[] = {ON, OFF, OFF, ON, OFF, ON, ON, OFF};
+    Cell* rules = new Cell [RULESIZE];
+    Mode mode;
 
-    print_first(a, WIDTH);
+    parse_args(argc, argv, rules, &mode);
+
+    print_first(a, WIDTH, mode);
     
     print_rest(a, b, WIDTH, HEIGHT, rules);
 
