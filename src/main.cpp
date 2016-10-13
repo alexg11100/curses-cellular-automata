@@ -6,6 +6,7 @@
 #include <time.h>
 #include <cstring>
 
+
 #define RULESIZE 8
 
 using namespace std;
@@ -27,6 +28,7 @@ void cursesinit(WINDOW* mainwin){
 	exit(EXIT_FAILURE);
     }
     start_color();
+    noecho();
     init_pair(2, COLOR_WHITE, COLOR_BLACK);
     init_pair(1, COLOR_CYAN, COLOR_BLACK);
 }
@@ -97,6 +99,7 @@ void print_rest(Cell* a, Cell* b, int WIDTH, int HEIGHT, Cell* rules){
     int curr = 1;
 
     for (int i = 0; i < HEIGHT-1; ++i){
+        // getch(); 
         if (curr == 1){
             gen_array(a, WIDTH, b, rules);
             print_array(b, WIDTH);
@@ -110,7 +113,7 @@ void print_rest(Cell* a, Cell* b, int WIDTH, int HEIGHT, Cell* rules){
 }
 
 void default_pattern(Cell* rules){
-    cout << "Defaulting to pattern: [10010110]" << endl;
+    cout << "Defaulting to pattern: [10010110]\r" << endl;
     rules[0] = ON;
     rules[1] = OFF;
     rules[2] = OFF;
@@ -124,37 +127,37 @@ void default_pattern(Cell* rules){
 
 void parse_args(int argc, char** argv, Cell* rules, Mode* mode){
     if (argc < 3){
-        cout << "No flag specified defaulting to -r" << endl;
-        *mode = RANDOM;
+        cout << "No mode specified defaulting to TRIANGLE\r" << endl;
+        *mode = TRIANGLE;
     } else {
         if (strcmp(argv[2], "-r") == 0){
-            cout << "MODE: RANDOM" << endl;
+            cout << "MODE: RANDOM\r" << endl;
             *mode = RANDOM;
         } else if (strcmp(argv[2], "-t") == 0){
-            cout << "MODE: TRIANGLE" << endl;
+            cout << "MODE: TRIANGLE\r" << endl;
             *mode = TRIANGLE;
         } else {
-            cout << "Invalid mode flag defaulting to -r" << endl;
-            *mode = RANDOM;
+            cout << "Invalid mode defaulting to TRIANGLE\r" << endl;
+            *mode = TRIANGLE;
         }
     }
     if (argc < 2){
-        cout << "Pattern not provided" << endl;
+        cout << "Pattern not provided\r" << endl;
         default_pattern(rules);
     } else {
         if (strlen(argv[1]) != RULESIZE){
-            cout << "Invalid Pattern size" << endl;
+            cout << "Invalid Pattern size\r" << endl;
             default_pattern(rules);
             return;
         }   
-        cout << "Using specified pattern [" << argv[1] << "]" << endl;
+        cout << "Using specified pattern [" << argv[1] << "]\r" << endl;
         for (int i = 0; i < strlen(argv[1]); ++i){
             if (argv[1][i] == '1'){
                 rules[i] = ON;
             } else if (argv[1][i] == '0'){
                 rules[i] = OFF;
             } else {
-                cout << "Invalid Pattern" << endl;
+                cout << "Invalid Pattern\r" << endl;
                 default_pattern(rules);
             }
         }

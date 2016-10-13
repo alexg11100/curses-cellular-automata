@@ -3,4 +3,4 @@ main: ../src/main.cpp
 clean: 
 	rm main
 run: main
-	./main 10010110
+	./main
