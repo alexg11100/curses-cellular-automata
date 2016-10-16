@@ -22,6 +22,18 @@ enum Mode {
     TRIANGLE
 };
 
+int decimal_to_binary(int n){
+    int rem, i=1, binary=0;
+    while (n!=0)
+    {
+        rem=n%2;
+        n/=2;
+        binary+=rem*i;
+        i*=10;
+    }
+    return binary;
+}
+
 void cursesinit(WINDOW* mainwin){
     if ( (mainwin = initscr()) == NULL ) {
 	fprintf(stderr, "Error initialising ncurses.\n");
@@ -42,7 +54,7 @@ void fill_array(Cell* arr, int size, Mode mode){
     if (mode == RANDOM){
         srand(time(NULL));
         for (int i = 0; i < size; ++i){
-            arr[i] = Cell(rand()%2);
+            arr[i] = Cell(rand()%2-1);
         }
     } else if (mode == TRIANGLE){
         for (int i = 0; i < size; ++i){
@@ -145,16 +157,18 @@ void parse_args(int argc, char** argv, Cell* rules, Mode* mode){
         cout << "Pattern not provided\r" << endl;
         default_pattern(rules);
     } else {
-        if (strlen(argv[1]) != RULESIZE){
-            cout << "Invalid Pattern size\r" << endl;
+        if (stoi(argv[1]) > 255){
+            cout << "Invalid Pattern size - Must be less than 255\r" << endl;
             default_pattern(rules);
             return;
         }   
-        cout << "Using specified pattern [" << argv[1] << "]\r" << endl;
-        for (int i = 0; i < strlen(argv[1]); ++i){
-            if (argv[1][i] == '1'){
+        char pattern[RULESIZE+1];
+        snprintf(pattern, sizeof(pattern), "%08d", decimal_to_binary(stoi(argv[1])));
+        cout << "Using specified pattern [" << pattern << "]\r" << endl;
+        for (int i = 0; i < strlen(pattern); ++i){
+            if (pattern[i] == '1'){
                 rules[i] = ON;
-            } else if (argv[1][i] == '0'){
+            } else if (pattern[i] == '0'){
                 rules[i] = OFF;
             } else {
                 cout << "Invalid Pattern\r" << endl;
