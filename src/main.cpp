@@ -78,7 +78,7 @@ void print_array(Cell* arr, int size){
 void gen_array(Cell* arr, int size, Cell* newarr, Cell* rules){
     for (int i = 0; i < size; ++i){
         Cell a,b,c;
-        b = arr[i];
+        b = arr[i%size];
         a = arr[(i-1)%size];
         c = arr[(i+1)%size];
 
@@ -204,5 +204,9 @@ int main(int argc, char** argv){
     refresh();
     getch();
     cleanup(mainwin);
+    delete[] a;
+    delete[] b;
+    delete[] rules;
+
     return EXIT_SUCCESS;
 }
