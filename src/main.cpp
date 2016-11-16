@@ -5,6 +5,9 @@
 #include <cstdio>
 #include <time.h>
 #include <cstring>
+#include <boost/program_options.hpp>
+
+namespace po = boost::program_options;
 
 
 #define RULESIZE 8

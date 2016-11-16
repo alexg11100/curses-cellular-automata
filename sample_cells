@@ -1,0 +1,7 @@
+#!/bin/bash
+# Tested using bash version 4.1.5
+for ((i=0;i<=255;i++)); 
+do 
+   # your-unix-command-here
+   cells $i
+done
